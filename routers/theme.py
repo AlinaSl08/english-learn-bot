@@ -1,7 +1,6 @@
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram import Router, F
-from aiogram import Bot
 from utils.delete_last_message import safe_delete, delete_last_message
 from keyboards.theme_kb import levels_kb, themes_kb, subtopic_kb, theory_kb
 from states.theory_state import Theory
@@ -23,7 +22,7 @@ async def theme(call: CallbackQuery, state: FSMContext):
 @theme_router.message(Theory.level)
 async def level_selection(message: Message, state: FSMContext):
     bot_msg = await message.answer(
-        "Пожалуйста, выберите дату с помощью кнопок ниже 👇", reply_markup=levels_kb()
+        "Пожалуйста, выберите уровень с помощью кнопок ниже 👇", reply_markup=levels_kb()
     )
     data = await state.get_data()
     last_msg_id = data.get("last_msg_id")
@@ -46,7 +45,7 @@ async def level(call: CallbackQuery, state: FSMContext):
 @theme_router.message(Theory.theme)
 async def theme_selection(message: Message, state: FSMContext):
     bot_msg = await message.answer(
-        "Пожалуйста, выберите дату с помощью кнопок ниже 👇", reply_markup=themes_kb()
+        "Пожалуйста, выберите тему с помощью кнопок ниже 👇", reply_markup=themes_kb()
     )
     data = await state.get_data()
     last_msg_id = data.get("last_msg_id")
@@ -64,21 +63,12 @@ async def theme(call: CallbackQuery, state: FSMContext):
     await state.set_state(Theory.subtopic)
     await call.answer()
 
-@theme_router.callback_query(F.data == "back_to_levels")
-async def back_to_levels(call: CallbackQuery, state: FSMContext):
-    await safe_delete(call.message)
-    bot_msg = await call.message.answer(
-        "Выбери свой уровень. Для открытия закрытых тем, пройди предыдущие темы или тест на твой уровень английского",
-        reply_markup=levels_kb())
-    await state.update_data(last_msg_id=bot_msg.message_id)
-    await state.set_state(Theory.level)
-    await call.answer()
 
 #выбор подтемы
 @theme_router.message(Theory.subtopic)
 async def subtopic_selection(message: Message, state: FSMContext):
     bot_msg = await message.answer(
-        "Пожалуйста, выберите дату с помощью кнопок ниже 👇", reply_markup=subtopic_kb()
+        "Пожалуйста, выберите подтему с помощью кнопок ниже 👇", reply_markup=subtopic_kb()
     )
     data = await state.get_data()
     last_msg_id = data.get("last_msg_id")
@@ -114,3 +104,4 @@ async def back_to_subtopic(call: CallbackQuery, state: FSMContext):
 @theme_router.callback_query(F.data == "learned")
 async def learned(call: CallbackQuery, state: FSMContext):
     await call.answer("Тема отмечена выученной")
+    await state.clear()

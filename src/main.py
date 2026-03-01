@@ -9,6 +9,8 @@ from aiogram import Router
 from commands.command import commands_router, set_bot_commands
 from routers.profile import profile_router
 from routers.theme import theme_router
+from routers.ai_teacher import ai_teacher_router
+from routers.tests import tests_router
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
@@ -23,6 +25,8 @@ async def main():
     dp.include_router(commands_router)
     dp.include_router(profile_router)
     dp.include_router(theme_router)
+    dp.include_router(ai_teacher_router)
+    dp.include_router(tests_router)
 
     await set_bot_commands(bot)
     await dp.start_polling(bot)

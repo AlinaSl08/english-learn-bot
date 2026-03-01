@@ -92,8 +92,19 @@ async def reset_confirm(call: CallbackQuery, state: FSMContext):
 @profile_router.callback_query(F.data == "change_level")
 async def change_level(call: CallbackQuery):
     await safe_delete(call.message)
-    await call.message.answer("Вы можете изменить уровень на предыдущий или пройти тест, чтобы открыть доступ к уровням выше", reply_markup=change_level_kb())
+    await call.message.answer("Вы можете изменить уровень на предыдущий или пройти тест, чтобы открыть доступ к уровням выше", reply_markup=change_level_kb(mode_key=2))
     await call.answer()
+
+@profile_router.callback_query(F.data.startswith("level_selected_"))
+async def level_selected(call: CallbackQuery, state: FSMContext):
+    num_level = int(call.data.split("_")[2])
+    await safe_delete(call.message)
+    await call.message.answer(f"Ваш уровень изменен на {num_level}")
+    bot_msg = await call.message.answer("Выберите действие:", reply_markup=menu_kb())
+    await state.update_data(last_msg_id=bot_msg.message_id)
+    await call.answer()
+
+
 
 @profile_router.callback_query(F.data == "back_to_settings")
 async def back_to_settings(call: CallbackQuery):

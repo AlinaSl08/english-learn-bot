@@ -40,11 +40,18 @@ def reset_confirm_kb():
     kb.adjust(1, 1)
     return kb.as_markup()
 
-def change_level_kb(): #сделать циклом
+def change_level_kb(mode_key=1):
     kb = InlineKeyboardBuilder()
-    for i in range(5):
-        kb.button(text=f'Уровень {i}', callback_data=f'level_selected_{i}')
-    kb.button(text='⬅️ Назад', callback_data='back_to_settings')
+    modes = {1: 'test', 2: 'settings'}
+    mode = modes[mode_key]
+    if mode == 'test':
+        for i in range(1, 5):
+            kb.button(text=f'Уровень {i}', callback_data=f'test_level_{i}') #доделать тут
+        kb.button(text='⬅️ Назад', callback_data='cancel_menu')
+    else: #тут смена уровня в лк
+        for i in range(1, 5):
+            kb.button(text=f'Уровень {i}', callback_data=f'level_selected_{i}')
+        kb.button(text='⬅️ Назад', callback_data='back_to_settings')
     kb.button(text='Сдать тест на уровень', callback_data='test_level')
     count = 5
     if count <= 4:

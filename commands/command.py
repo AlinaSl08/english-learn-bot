@@ -16,7 +16,7 @@ commands_router = Router()
 @commands_router.message(Command("start"))
 async def start(message: Message, state: FSMContext):
     user_id = str(message.chat.id)
-    bot_msg = await message.answer("🌟 Привет! Я ваш виртуальный помощник для изучения английского языка. 🎉\n\nДавайте начнем ваше языковое приключение! 🚀", reply_markup=menu_kb())
+    bot_msg = await message.answer("🌟 Привет! Я твой виртуальный помощник для изучения английского языка. 🎉\n\nДавайте начнем твое языковое приключение! 🚀", reply_markup=menu_kb())
     await state.set_state(Menu.menu)
     await state.update_data(last_msg_id=bot_msg.message_id)
 
