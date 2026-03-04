@@ -2,8 +2,9 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import BotCommand
-from aiogram.types import Message, CallbackQuery
-import os
+from aiogram.types import Message
+from aiogram.filters import StateFilter
+
 
 from states.menu_state import Menu
 from keyboards.menu_kb import menu_kb
@@ -40,11 +41,11 @@ async def set_bot_commands(bot):
     ]
     await bot.set_my_commands(commands) # отправляем телеграм список команд бота
 
-@commands_router.message(F.text)
+@commands_router.message(F.text, StateFilter(Menu.menu))
 async def ignore_menu(message: Message, state: FSMContext):
     current_state = await state.get_state()
     # Если пользователь находится в состоянии меню
-    if current_state == Menu.menu.state:
+    if current_state != "general_chat":
         data = await state.get_data()
         menu_msg_id = data.get("last_msg_id")
         # Удаляем старое сообщение бота
