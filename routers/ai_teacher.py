@@ -15,22 +15,7 @@ load_dotenv()
 GIGA_TOKEN = os.getenv("GIGACHAT_API_KEY")
 
 giga = GigaChat(credentials=GIGA_TOKEN, verify_ssl_certs=False)
-
-# Инициализация списка для хранения сообщений
-messages = []
-
-
 ai_teacher_router = Router()
-
-#промт на общий чат
-def create_general_prompt(user_input):
-    return (f"Ты — помощник по изучению английского языка. "
-            f"Пользователь будет задавать вопросы, и ты должен отвечать на них, "
-            f"если они касаются изучения английского языка. Если пользователь "
-            f"задает вопрос, не относящийся к теме, вежливо перенаправь его на "
-            f"вопросы по английскому языку. "
-            f"Пользователь спросил: \"{user_input}\"")
-
 
 
 async def get_ai_response(history_list):
@@ -68,8 +53,18 @@ async def ai_theme(call: CallbackQuery, state: FSMContext):
 async def general_chat(call: CallbackQuery, state: FSMContext):
     await safe_delete(call.message)
     await call.message.answer("Вы выбрали общий чат. Напишите сообщение боту. Для завершения общения, напишите слово: «Выход»")
+    await state.update_data(messages=[{
+            "role": "system",
+            "content": (
+                "Ты — помощник по изучению английского языка. "
+            f"Пользователь будет задавать вопросы, и ты должен отвечать на них, "
+            f"если они касаются изучения английского языка. Если пользователь "
+            f"задает вопрос, не относящийся к теме, вежливо перенаправь его на "
+            f"вопросы по английскому языку.")}])
+
+
+
     await state.set_state("general_chat")
-    print("Пользователь выбрал общий чат")
     await call.answer()
 
 
@@ -82,14 +77,17 @@ async def handle_general_chat_message(message: Message, state: FSMContext):
 
     # Проверка на выход
     if user_input.lower() == "выход":
-        await message.answer("Вы вышли из чата.")
+        await message.answer("Вы вышли из чата. Ждем вас снова 👋")
         await state.clear()
         bot_msg = await message.answer("Выберите действие:", reply_markup=menu_kb())
         await state.update_data(last_msg_id=bot_msg.message_id)  # Сохраняем ID последнего сообщения
         return
 
-    prompt = create_general_prompt(user_input)
-    user_history.append({"role": "user", "content": prompt})
+    user_history.append({
+        "role": "user",
+        "content": user_input
+    })
+
     try:
         ai_response = await get_ai_response(user_history)
         user_history.append({"role": "assistant", "content": ai_response})
