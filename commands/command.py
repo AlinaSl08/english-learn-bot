@@ -16,17 +16,20 @@ commands_router = Router()
 
 @commands_router.message(Command("start"))
 async def start(message: Message, state: FSMContext):
+    await state.clear()
     user_id = str(message.chat.id)
     bot_msg = await message.answer("🌟 Привет! Я твой виртуальный помощник для изучения английского языка. 🎉\n\nДавайте начнем твое языковое приключение! 🚀", reply_markup=menu_kb())
     await state.set_state(Menu.menu)
     await state.update_data(last_msg_id=bot_msg.message_id)
 
 @commands_router.message(Command("help"))
-async def help(message: Message):
+async def help(message: Message, state: FSMContext):
+    await state.clear()
     await message.answer("🤖 Список доступных команд бота: \n/start\n/menu\n/help")
 
 @commands_router.message(Command("menu"))
 async def menu(message: Message, state: FSMContext):
+    await state.clear()
     bot_msg = await message.answer("Выберите действие:", reply_markup=menu_kb())
     await state.set_state(Menu.menu)
     await state.update_data(last_msg_id=bot_msg.message_id)
@@ -52,7 +55,6 @@ async def ignore_menu(message: Message, state: FSMContext):
         if menu_msg_id:
             await delete_last_message(menu_msg_id, message)
         bot_msg = await message.answer(
-            "Пожалуйста, выберите действие с помощью кнопок ниже 👇", reply_markup=menu_kb()
-        )
+            "Пожалуйста, выберите действие с помощью кнопок ниже 👇", reply_markup=menu_kb())
         # Сохраняем новый id
         await state.update_data(last_msg_id=bot_msg.message_id)

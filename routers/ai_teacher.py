@@ -9,6 +9,7 @@ from gigachat import GigaChat
 from dotenv import load_dotenv
 import os
 from gigachat.models import Chat
+from states.menu_state import Menu
 
 
 load_dotenv()
@@ -19,7 +20,6 @@ ai_teacher_router = Router()
 
 
 async def get_ai_response(history_list):
-
     payload = Chat(
         messages=history_list,
         model="GigaChat"
@@ -31,10 +31,14 @@ async def get_ai_response(history_list):
 @ai_teacher_router.callback_query(F.data == "ai_teacher")
 async def ai_teacher(call: CallbackQuery, state: FSMContext):
     await safe_delete(call.message)
+    token = 10
     bot_msg = await call.message.answer(
-        "Количество запросов на сегодня: 10\nБот будет объяснять темы, которые касаются вашего уровня.\n"
-        "Вы можете обсудить с ИИ-ассистентом определенную тему или открыть общий чат",
-        reply_markup=ai_themes_kb())
+        f"🎓 *Ваш персональный ИИ-наставник готов к работе!*\n\n"
+        f"📊 *Доступно запросов на сегодня:* `{token}`\n\n"
+        "Я помогу вам разобраться в сложных темах, учитывая ваш текущий уровень знаний. "
+        "Мы можем сфокусироваться на конкретном модуле или пообщаться в свободном режиме.\n\n"
+        "👇 *Выберите формат обучения:*",
+        reply_markup=ai_themes_kb(), parse_mode="Markdown")
     await state.update_data(last_msg_id=bot_msg.message_id)
     await call.answer()
 
@@ -61,15 +65,12 @@ async def general_chat(call: CallbackQuery, state: FSMContext):
             f"если они касаются изучения английского языка. Если пользователь "
             f"задает вопрос, не относящийся к теме, вежливо перенаправь его на "
             f"вопросы по английскому языку.")}])
-
-
-
     await state.set_state("general_chat")
     await call.answer()
 
 
 # Обработчик текстовых сообщений в общем чате
-@ai_teacher_router.message(F.text, StateFilter("general_chat"))
+@ai_teacher_router.message(F.text & ~F.text.startswith("/"), StateFilter("general_chat"))
 async def handle_general_chat_message(message: Message, state: FSMContext):
     user_input = message.text
     data = await state.get_data()
@@ -81,6 +82,7 @@ async def handle_general_chat_message(message: Message, state: FSMContext):
         await state.clear()
         bot_msg = await message.answer("Выберите действие:", reply_markup=menu_kb())
         await state.update_data(last_msg_id=bot_msg.message_id)  # Сохраняем ID последнего сообщения
+        await state.set_state(Menu.menu)
         return
 
     user_history.append({
