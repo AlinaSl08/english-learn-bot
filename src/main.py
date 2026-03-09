@@ -11,6 +11,7 @@ from routers.profile import profile_router
 from routers.theme import theme_router
 from routers.ai_teacher import ai_teacher_router
 from routers.tests import tests_router
+from routers.my_dictionary import my_dictionary
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
@@ -27,7 +28,7 @@ async def main():
     dp.include_router(theme_router)
     dp.include_router(ai_teacher_router)
     dp.include_router(tests_router)
-
+    dp.include_router(my_dictionary)
     await set_bot_commands(bot)
     await dp.start_polling(bot)
 

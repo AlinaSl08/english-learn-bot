@@ -1,10 +1,10 @@
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram import Router, F
-from aiogram import Bot
 from utils.delete_last_message import safe_delete, delete_last_message
 from keyboards.profile_kb import profile_kb, subscription_kb, payment_method_kb, settings_kb, reset_confirm_kb, change_level_kb
 from keyboards.menu_kb import menu_kb
+from states.menu_state import Menu
 
 profile_router = Router()
 
@@ -119,7 +119,9 @@ async def back_to_settings(call: CallbackQuery):
 @profile_router.callback_query(F.data == "cancel_menu")
 async def cancel_menu(call: CallbackQuery, state: FSMContext):
     await safe_delete(call.message)
+    await state.clear()
     await call.answer("Возвращаемся в меню...")
     bot_msg = await call.message.answer("Выберите действие:", reply_markup=menu_kb())
+    await state.set_state(Menu.menu)
     await state.update_data(last_msg_id=bot_msg.message_id)
     await call.answer()

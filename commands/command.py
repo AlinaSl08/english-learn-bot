@@ -35,7 +35,6 @@ async def menu(message: Message, state: FSMContext):
     await state.update_data(last_msg_id=bot_msg.message_id)
 
 
-# создание подсказать к командам при вводе /
 async def set_bot_commands(bot):
     commands = [
         BotCommand(command="start", description="Запустить бота"),
