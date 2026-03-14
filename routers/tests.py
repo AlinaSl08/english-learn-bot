@@ -13,11 +13,12 @@ tests_router = Router()
 #выбор уровня
 @tests_router.callback_query(F.data == "tests")
 async def tests(call: CallbackQuery, state: FSMContext):
+    await call.answer()
     await safe_delete(call.message)
     bot_msg = await call.message.answer("Выбери уровень:", reply_markup=change_level_kb(mode_key=1))
     await state.update_data(last_msg_id=bot_msg.message_id)
     await state.set_state(Practice.level)
-    await call.answer()
+
 
 @tests_router.message(Practice.level)
 async def level_selection_for_test(message: Message, state: FSMContext):
@@ -32,6 +33,7 @@ async def level_selection_for_test(message: Message, state: FSMContext):
 #выбор темы
 @tests_router.callback_query(F.data.startswith("test_level_"))
 async def test_level(call: CallbackQuery, state: FSMContext):
+    await call.answer()
     level_num = int(call.data.split("_")[2])
     await safe_delete(call.message)
     await state.update_data(level=level_num)
@@ -41,6 +43,7 @@ async def test_level(call: CallbackQuery, state: FSMContext):
 
 @tests_router.callback_query(F.data == "back_to_theme_test")
 async def back_to_theme_test(call: CallbackQuery, state: FSMContext):
+    await call.answer()
     await safe_delete(call.message)
     bot_msg = await call.message.answer("Выбери тему:", reply_markup=themes_kb(mode_key=1))
     await state.update_data(last_msg_id=bot_msg.message_id)
@@ -59,6 +62,7 @@ async def theme_selection_for_test(message: Message, state: FSMContext):
 #выбор вопроса
 @tests_router.callback_query(F.data.startswith("test_theme_"))
 async def test_theme(call: CallbackQuery, state: FSMContext):
+    await call.answer()
     theme_num = int(call.data.split("_")[2])
     await safe_delete(call.message)
     await state.update_data(theme=theme_num)
@@ -80,6 +84,7 @@ async def question_selection_for_test(message: Message, state: FSMContext):
 #вопрос с вариантами ответа
 @tests_router.callback_query(F.data.startswith("question_"))
 async def question(call: CallbackQuery, state: FSMContext):
+    await call.answer()
     question_num = int(call.data.split("_")[1])
     await safe_delete(call.message)
     await state.update_data(question=question_num)
@@ -91,6 +96,7 @@ async def question(call: CallbackQuery, state: FSMContext):
 
 @tests_router.callback_query(F.data == "back_to_questions_test")
 async def back_to_questions_test(call: CallbackQuery, state: FSMContext):
+    await call.answer()
     await safe_delete(call.message)
     bot_msg = await call.message.answer("Выбери вопрос:", reply_markup=questions_kb())
     await state.update_data(last_msg_id=bot_msg.message_id)
@@ -98,13 +104,14 @@ async def back_to_questions_test(call: CallbackQuery, state: FSMContext):
 
 @tests_router.callback_query(F.data.startswith("answer_"))
 async def answer(call: CallbackQuery, state: FSMContext):
+
     answer_num = int(call.data.split("_")[1])
     await safe_delete(call.message)
     await state.update_data(answer=answer_num)
     await call.answer("Ваш ответ сохранен и дальше следующий вопрос")
     bot_msg = await call.message.answer("Выберите действие:", reply_markup=menu_kb())
     await state.update_data(last_msg_id=bot_msg.message_id)
-    await call.answer()
+
 
 
 #тест на уровень пользователя

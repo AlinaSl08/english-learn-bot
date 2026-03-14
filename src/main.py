@@ -12,15 +12,20 @@ from routers.theme import theme_router
 from routers.ai_teacher import ai_teacher_router
 from routers.tests import tests_router
 from routers.my_dictionary import my_dictionary
+from database.theme_db import update_cache
 
 load_dotenv()
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(message)s")
+logger = logging.getLogger(__name__)
+
 TOKEN = os.getenv("BOT_TOKEN")
 
 #--ЗАПУСК БОТА--
 async def main():
+    logger.info("Обновление кеша Google Sheets...")
+    await update_cache()
     bot = Bot(token=TOKEN)
     dp = Dispatcher(storage=MemoryStorage())
-    logging.basicConfig(level=logging.INFO)
 
     main_router = Router()
     dp.include_router(commands_router)
@@ -30,7 +35,8 @@ async def main():
     dp.include_router(tests_router)
     dp.include_router(my_dictionary)
     await set_bot_commands(bot)
-    await dp.start_polling(bot)
+    logger.info("Бот запущен и готов к работе!")
+    await dp.start_polling(bot, skip_updates=True)
 
 if __name__ == "__main__": #если запускается из этого файла, то работает, если импортируется, то нет
     asyncio.run(main())

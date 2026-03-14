@@ -30,6 +30,7 @@ async def get_ai_response(history_list):
 
 @ai_teacher_router.callback_query(F.data == "ai_teacher")
 async def ai_teacher(call: CallbackQuery, state: FSMContext):
+    await call.answer()
     await safe_delete(call.message)
     token = 10
     bot_msg = await call.message.answer(
@@ -40,21 +41,23 @@ async def ai_teacher(call: CallbackQuery, state: FSMContext):
         "👇 *Выберите формат обучения:*",
         reply_markup=ai_themes_kb(), parse_mode="Markdown")
     await state.update_data(last_msg_id=bot_msg.message_id)
-    await call.answer()
+
 
 #чат по теме
 @ai_teacher_router.callback_query(F.data.startswith("ai_theme_"))
 async def ai_theme(call: CallbackQuery, state: FSMContext):
+    await call.answer()
     await safe_delete(call.message)
     theme = int(call.data.split("_")[2])
     await call.message.answer(f"Вы выбрали тему: {theme}. Напишите сообщение боту по выбранной теме")
     bot_msg = await call.message.answer("Выберите действие:", reply_markup=menu_kb())
     await state.update_data(last_msg_id=bot_msg.message_id)
-    await call.answer()
+
 
 #общий чат
 @ai_teacher_router.callback_query(F.data == "general_chat")
 async def general_chat(call: CallbackQuery, state: FSMContext):
+    await call.answer()
     await safe_delete(call.message)
     await call.message.answer("Вы выбрали общий чат. Напишите сообщение боту. Для завершения общения, напишите слово: «Выход»")
     await state.update_data(messages=[{
@@ -75,7 +78,7 @@ async def general_chat(call: CallbackQuery, state: FSMContext):
                 "Пример отказа: «Я специализируюсь исключительно на изучении английского языка и не могу помочь с вопросами по другим языкам. "
                 "Давайте лучше разберем что-нибудь из английской грамматики?»")}])
     await state.set_state("general_chat")
-    await call.answer()
+
 
 
 # Обработчик текстовых сообщений в общем чате

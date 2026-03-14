@@ -10,22 +10,24 @@ my_dictionary = Router()
 
 @my_dictionary.callback_query(F.data == "my_dictionary")
 async def show_my_dictionary(call: CallbackQuery, state: FSMContext):
-    await safe_delete(call.message)
     # потом поменять на sql
     words_count = 1
+    if words_count == 0:
+        #bot_msg = await call.message.answer(
+            #"У вас еще нет сохраненных слов. Вы можете ознакомиться со списком слов тут: тут ссылка ")
+        await call.answer('Команда в разработке. Пожалуйста, нажмите меню', show_alert=True)
+        #await state.update_data(last_msg_id=bot_msg.message_id)
+        return
+    await call.answer() #потом в начало переместить
+    await safe_delete(call.message) #потом в начало переместить
 
-    if words_count != 0:
-        bot_msg = await call.message.answer(
+    bot_msg = await call.message.answer(
         f"Всего сохраненных слов: {words_count}.\n\nВы можете просмотреть заново карточки слов, которые ранее сохранили.\n\nВыберите тему:",
         reply_markup=words_topic_kb())
-        await state.update_data(last_msg_id=bot_msg.message_id)
-        await call.answer()
-    else:
-        bot_msg = await call.message.answer(
-            "У вас еще нет сохраненных слов. Вы можете ознакомиться со списком слов тут: тут ссылка ")
-        await call.answer('Команда в разработке. Пожалуйста, нажмите меню')
-        await state.update_data(last_msg_id=bot_msg.message_id)
-        await call.answer()
+    await state.update_data(last_msg_id=bot_msg.message_id)
+
+
+
 
 @my_dictionary.callback_query(F.data.startswith("topic_"))
 async def words_list(call: CallbackQuery, state: FSMContext):
