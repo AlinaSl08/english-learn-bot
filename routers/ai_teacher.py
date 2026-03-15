@@ -88,7 +88,6 @@ async def handle_general_chat_message(message: Message, state: FSMContext):
     data = await state.get_data()
     user_history = data.get("messages", [])
 
-    # Проверка на выход
     if user_input.lower() == "выход":
         await message.answer("Вы вышли из чата. Ждем вас снова 👋")
         await state.clear()

@@ -2,8 +2,9 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram import Router, F
 from utils.delete_last_message import safe_delete, delete_last_message
-from keyboards.profile_kb import profile_kb, subscription_kb, payment_method_kb, settings_kb, reset_confirm_kb, change_level_kb
+from keyboards.profile_kb import profile_kb, settings_kb, reset_confirm_kb, change_level_kb
 from keyboards.menu_kb import menu_kb
+from keyboards.payment_kb import subscription_kb
 from states.menu_state import Menu
 
 profile_router = Router()
@@ -12,10 +13,11 @@ profile_router = Router()
 async def profile(call: CallbackQuery):
     await call.answer()
     await safe_delete(call.message)
+    # берем уровень из sql, допилить
     await call.message.answer("Рады видеть тебя в профиле! 👋"
-                              "\n\nТвой текущий уровень — 1. Ты отлично справляешься! "
-                              "Чтобы открыть больше возможностей, загляни в раздел подписки."
-                              "\n\nИспользуй кнопки ниже для навигации:", reply_markup=profile_kb())
+                              "\n\nТвой текущий уровень — A1. Ты отлично справляешься! ✨"
+                              "Чтобы открыть больше возможностей, загляни в раздел подписки. 💎"
+                              "\n\nИспользуй кнопки ниже для навигации 👇:", reply_markup=profile_kb())
 
 
 #--СТАТИСТИКА--
@@ -35,25 +37,21 @@ async def statistics(call: CallbackQuery, state: FSMContext):
 async def subscription(call: CallbackQuery, state: FSMContext):
     await call.answer()
     await safe_delete(call.message)
-    await call.message.answer("Ваш тариф: Базовый\nПодписка: не активирована\nБаланс: 100руб\n\n"
-                              "Тарифы:\nБазовый\nВключает в себя:...\nПремиум\nВключает в себя:...", reply_markup=subscription_kb())
+    #тариф и баланс берем из sql
+    await call.message.answer("Ваш тариф: Базовый 📦\nПодписка: не активирована 🔒\nБаланс: 0руб 💰\n\n"
+                              "🚀 Тарифы:\n\n📦 Базовый — отличный старт для ежедневной практики:"
+                              "\n\n• 100 карточек со словами для твоего словаря."
+                              "\n• Тесты (по 2 вопроса на тему) для закрепления."
+                              "\n• 10 токенов для общения с ИИ."
+                              "\n• Доступ к ИИ-учителю по ключевым темам."
+                              "\n\n💎 Премиум — полный безлимит и быстрый результат:"
+                              "\n\n• Все фишки Базового, но в тройном объеме (300 карточек!)."
+                              "\n• Углубленные тесты: по 5 вопросов на каждую тему."
+                              "\n• Абсолютный безлимит общения с ИИ."
+                              "\n• Твой личный ИИ-учитель всегда под рукой: и в конкретных темах, и в свободном чате.", reply_markup=subscription_kb())
 
 
-@profile_router.callback_query(F.data == "subscribe")
-async def subscribe(call: CallbackQuery):
-    await call.answer()
-    await safe_delete(call.message)
-    await call.message.answer("Каким способом удобней провести оплату?", reply_markup=payment_method_kb())
 
-
-@profile_router.callback_query(F.data.startswith("payment_"))
-async def payment_method(call: CallbackQuery, state: FSMContext):
-    await call.answer()
-    await safe_delete(call.message)
-    method_num = int(call.data.split("_")[1])
-    await call.message.answer(f"Вы выбрали способ оплаты {method_num}")
-    bot_msg = await call.message.answer("Выберите действие:", reply_markup=menu_kb())
-    await state.update_data(last_msg_id=bot_msg.message_id)
 
 
 @profile_router.callback_query(F.data == "back_to_profile")
@@ -61,9 +59,10 @@ async def back(call: CallbackQuery):
     await call.answer()
     await safe_delete(call.message)
     await call.answer("Возвращаемся назад...")
-    await call.message.answer("\n\nТвой текущий уровень — 1. Ты отлично справляешься! "
-                              "Чтобы открыть больше возможностей, загляни в раздел подписки."
-                              "\n\nИспользуй кнопки ниже для навигации:", reply_markup=profile_kb())
+    # берем уровень из sql, допилить
+    await call.message.answer("\n\nТвой текущий уровень — A1. Ты отлично справляешься! ✨"
+                              "Чтобы открыть больше возможностей, загляни в раздел подписки. 💎"
+                              "\n\nИспользуй кнопки ниже для навигации 👇:", reply_markup=profile_kb())
 
 
 
@@ -73,7 +72,8 @@ async def back(call: CallbackQuery):
 async def settings(call: CallbackQuery):
     await call.answer()
     await safe_delete(call.message)
-    await call.message.answer("Ваш уровень сейчас 1."
+    # берем уровень из sql, допилить
+    await call.message.answer("Ваш уровень сейчас A1."
                               "\nВы можете изменить его пройдя тест или закончив изучение тем и тестов для предыдущих уровней",
                               reply_markup=settings_kb())
 
@@ -121,8 +121,9 @@ async def level_selected(call: CallbackQuery, state: FSMContext):
 async def back_to_settings(call: CallbackQuery):
     await call.answer()
     await safe_delete(call.message)
+    #берем уровень из sql, допилить
     await call.answer("Возвращаемся назад...")
-    await call.message.answer("Ваш уровень сейчас 1."
+    await call.message.answer("Ваш уровень сейчас A1."
                               "\nВы можете изменить его пройдя тест или закончив изучение тем и тестов для предыдущих уровней",
                               reply_markup=settings_kb())
 

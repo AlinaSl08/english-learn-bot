@@ -12,6 +12,7 @@ from routers.theme import theme_router
 from routers.ai_teacher import ai_teacher_router
 from routers.tests import tests_router
 from routers.my_dictionary import my_dictionary
+from routers.payment import payment_router
 from database.theme_db import update_cache
 
 load_dotenv()
@@ -28,6 +29,7 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
 
     main_router = Router()
+    dp.include_router(payment_router)
     dp.include_router(commands_router)
     dp.include_router(profile_router)
     dp.include_router(theme_router)
@@ -36,7 +38,7 @@ async def main():
     dp.include_router(my_dictionary)
     await set_bot_commands(bot)
     logger.info("Бот запущен и готов к работе!")
-    await dp.start_polling(bot, skip_updates=True)
+    await dp.start_polling(bot, skip_updates=True, allowed_updates=["message", "callback_query", "pre_checkout_query"])
 
 if __name__ == "__main__": #если запускается из этого файла, то работает, если импортируется, то нет
     asyncio.run(main())

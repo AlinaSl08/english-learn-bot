@@ -10,20 +10,7 @@ def profile_kb():
     kb.adjust(2, 2)
     return kb.as_markup()
 
-def subscription_kb():
-    kb = InlineKeyboardBuilder()
-    kb.button(text='✨ Оформить премиум', callback_data='subscribe')
-    kb.button(text='⬅️ Назад', callback_data='back_to_profile')
-    kb.adjust(1, 1)
-    return kb.as_markup()
 
-def payment_method_kb():
-    kb = InlineKeyboardBuilder()
-    kb.button(text='💳 1 способ', callback_data='payment_1')
-    kb.button(text='💳 2 способ', callback_data='payment_2')
-    kb.button(text='⬅️ Назад в профиль', callback_data='back_to_profile')
-    kb.adjust(2, 1)
-    return kb.as_markup()
 
 def settings_kb():
     kb = InlineKeyboardBuilder()
@@ -44,13 +31,14 @@ def change_level_kb(mode_key=1):
     kb = InlineKeyboardBuilder()
     modes = {1: 'test', 2: 'settings'}
     mode = modes[mode_key]
+    levels = ['Уровень A1', 'Уровень A2', 'Уровень B1', 'Уровень B2']
     if mode == 'test':
-        for i in range(1, 5):
-            kb.button(text=f'Уровень {i}', callback_data=f'test_level_{i}') #доделать тут
+        for idx, level in enumerate(levels, start=1):
+            kb.button(text=f'{level}', callback_data=f'test_level_{idx}') #доделать тут
         kb.button(text='⬅️ Назад', callback_data='cancel_menu')
     else: #тут смена уровня в лк
-        for i in range(1, 5):
-            kb.button(text=f'Уровень {i}', callback_data=f'level_selected_{i}')
+        for idx, level in enumerate(levels, start=1):
+            kb.button(text=f'{level}', callback_data=f'level_selected_{idx}')
         kb.button(text='⬅️ Назад', callback_data='back_to_settings')
     kb.button(text='Сдать тест на уровень', callback_data='test_level')
     count = 5
