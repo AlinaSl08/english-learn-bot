@@ -31,7 +31,7 @@ def change_level_kb(mode_key=1):
     kb = InlineKeyboardBuilder()
     modes = {1: 'test', 2: 'settings'}
     mode = modes[mode_key]
-    levels = ['Уровень A1', 'Уровень A2', 'Уровень B1', 'Уровень B2']
+    levels = ['🍼 Уровень A1', '🐥 Уровень A2', '🎓 Уровень B1', '👨‍🎓 Уровень B2']
     if mode == 'test':
         for idx, level in enumerate(levels, start=1):
             kb.button(text=f'{level}', callback_data=f'test_level_{idx}') #доделать тут
@@ -40,7 +40,7 @@ def change_level_kb(mode_key=1):
         for idx, level in enumerate(levels, start=1):
             kb.button(text=f'{level}', callback_data=f'level_selected_{idx}')
         kb.button(text='⬅️ Назад', callback_data='back_to_settings')
-    kb.button(text='Сдать тест на уровень', callback_data='test_level')
+    kb.button(text='📝 Сдать тест на уровень', callback_data='test_level')
     count = 5
     if count <= 4:
         kb.adjust(1)

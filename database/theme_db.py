@@ -1,7 +1,7 @@
 import gspread_asyncio
 from google.oauth2.service_account import Credentials
 import os
-
+import logging
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 json_path = os.path.join(current_dir, 'english-project-489515-72e378e63ef0.json')
@@ -40,7 +40,14 @@ async def update_cache():
     data3 = await sheet3.get_all_records()
     cache["questions"] = [row['Вопрос'] for row in data3]
     cache["answers"] = [row['Варианты ответов'] for row in data3]
-    print("Кеш успешно обновлен!")
+    cache["explanation_of_errors"] = [row['Пояснение к ошибкам'] for row in data3]
+    # Лист 4
+    sheet4 = await spreadsheet.worksheet('Тест на уровень')
+    data4 = await sheet4.get_all_records()
+    cache["questions_level"] = [row['Вопрос'] for row in data4]
+    cache["answers_level"] = [row['Варианты ответов'] for row in data4]
+    cache["explanation_of_errors_level"] = [row['Пояснение к ошибкам'] for row in data4]
+    logging.info("Кеш успешно обновлен!")
 
 
 
@@ -58,10 +65,10 @@ def get_questions_and_answers(topic_idx):
     try:
         question = cache["questions"][topic_idx]
         answer = cache["answers"][topic_idx]
-        return [question, answer]
+        explanation_of_errors = cache["explanation_of_errors"][topic_idx]
+        return [question, answer, explanation_of_errors]
     except (IndexError, KeyError):
         return ["Вопрос не найден", "Ответ не найден"]
-
 
 def get_words_and_card_words(topic_idx):
     try:
@@ -70,3 +77,12 @@ def get_words_and_card_words(topic_idx):
         return [word, word_card]
     except (IndexError, KeyError):
         return ["Слово не найдено", "Карточка слова не найдена"]
+
+def get_questions_and_answers_level(topic_idx):
+    try:
+        question_level = cache["questions_level"][topic_idx]
+        answer_level = cache["answers_level"][topic_idx]
+        explanation_of_errors_level = cache["explanation_of_errors_level"][topic_idx]
+        return [question_level, answer_level, explanation_of_errors_level]
+    except (IndexError, KeyError):
+        return ["Вопрос не найден", "Ответ не найден"]
