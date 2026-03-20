@@ -4,7 +4,7 @@ from aiogram import Router, F
 from utils.delete_last_message import safe_delete, delete_last_message
 from keyboards.theme_kb import levels_kb, themes_kb, theory_kb
 from states.theory_state import Theory
-from database.theme_db import get_topics_and_theory
+from database.gspread_db import get_topics_and_theory
 from states.practice_state import Practice
 from keyboards.tests_kb import questions_kb
 

@@ -13,7 +13,7 @@ from routers.ai_teacher import ai_teacher_router
 from routers.tests import tests_router
 from routers.my_dictionary import my_dictionary
 from routers.payment import payment_router
-from database.theme_db import update_cache
+from database.gspread_db import update_cache
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(message)s")

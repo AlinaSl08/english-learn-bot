@@ -1,5 +1,5 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from database.theme_db import get_topics_and_theory
+from database.gspread_db import get_topics_and_theory
 
 
 def levels_kb():

@@ -7,7 +7,6 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 json_path = os.path.join(current_dir, 'english-project-489515-72e378e63ef0.json')
 
 def get_creds():
-    # Тот же путь к JSON, что и был
     creds = Credentials.from_service_account_file(json_path)
     scoped = creds.with_scopes([
         "https://spreadsheets.google.com/feeds",
@@ -18,7 +17,14 @@ def get_creds():
 agcm = gspread_asyncio.AsyncioGspreadClientManager(get_creds)
 
 cache = {"theories": [], "topics": [],
-    "words": [], "words_card": []}
+    "words": [], "words_card": [],
+    "questions": [], "answers": [], "explanation_of_errors": [],
+    "questions_level": [], "answers_level": [],
+    "explanation_of_errors_level": [],
+    "sql_answers": [],
+    "sql_relations": [],
+    "sql_questions": [],
+    "sql_topics": [] }
 
 
 async def update_cache():
@@ -48,6 +54,16 @@ async def update_cache():
     cache["answers_level"] = [row['Варианты ответов'] for row in data4]
     cache["explanation_of_errors_level"] = [row['Пояснение к ошибкам'] for row in data4]
     logging.info("Кеш успешно обновлен!")
+    # Лист 5
+    sheet5 = await spreadsheet.worksheet('sql')
+    ranges = ['A2:A', 'C2:E', 'G2:H', 'J2:K']
+    data5 = await sheet5.batch_get(ranges)
+    cache["sql_answers"] = [row[0] for row in data5[0] if row]
+    cache["sql_relations"] = [row for row in data5[1] if row]
+    cache["sql_questions"] = [row for row in data5[2] if row]
+    cache["sql_topics"] = [row for row in data5[3] if row]
+
+    logging.info("Кеш успешно обновлен!")
 
 
 
@@ -59,7 +75,6 @@ def get_topics_and_theory(topic_idx):
         return [theory, topic]
     except (IndexError, KeyError):
         return ["Теория не найдена", "Тема не найдена"]
-
 
 def get_questions_and_answers(topic_idx):
     try:
@@ -86,3 +101,4 @@ def get_questions_and_answers_level(topic_idx):
         return [question_level, answer_level, explanation_of_errors_level]
     except (IndexError, KeyError):
         return ["Вопрос не найден", "Ответ не найден"]
+

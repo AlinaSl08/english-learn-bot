@@ -1,5 +1,5 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from database.theme_db import get_questions_and_answers, get_questions_and_answers_level
+from database.gspread_db import get_questions_and_answers, get_questions_and_answers_level
 
 def questions_kb(theme=1): #сделать замочки если нет премиум
     kb = InlineKeyboardBuilder()

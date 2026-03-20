@@ -8,7 +8,7 @@ from keyboards.theme_kb import themes_kb
 from keyboards.menu_kb import menu_kb
 from states.practice_state import Practice
 from keyboards.tests_kb import questions_kb, answers_kb, start_level_test, level_test_answers_kb, level_test_end
-from database.theme_db import get_questions_and_answers, get_questions_and_answers_level
+from database.gspread_db import get_questions_and_answers, get_questions_and_answers_level
 from states.menu_state import Menu
 from states.test_level_state import TestLevel
 

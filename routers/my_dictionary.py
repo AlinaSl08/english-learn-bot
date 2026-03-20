@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram import Router, F
 from utils.delete_last_message import safe_delete, delete_last_message
 from keyboards.my_dictionary_kb import words_topic_kb
-from database.theme_db import get_words_and_card_words
+from database.gspread_db import get_words_and_card_words
 
 
 my_dictionary = Router()
